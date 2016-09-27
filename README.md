@@ -22,11 +22,9 @@
 
 `python run.py`
 
-### Running the tests
+### Open the browser
 
-`cd ~/.../frontend326`
-  
-`nosetests`
+`http://localhost:8080`
 
 ### Deactivate virtual environment
 
