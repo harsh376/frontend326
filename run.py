@@ -5,18 +5,19 @@ from bottle import (
     request,
     error,
 )
+from utils import get_word_count
 
 
 @route('/')
 def home():
-    return template('templates/home')
-
-
-@route('/search')
-def search():
     if request.GET.save:
-        search_term = request.GET.task.strip()
-        return template('templates/search', search_term=search_term)
+        search_string = request.GET.keywords.strip()
+        word_count = get_word_count(search_string)
+        return template(
+            'templates/search',
+            search_string=search_string,
+            word_count=word_count,
+        )
     else:
         return template('templates/home')
 
