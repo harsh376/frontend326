@@ -5,7 +5,7 @@
 </form>
 <h3>Search for "{{search_string}}"</h3>
 <div>
-  <table id=”results”>
+  <table id="results">
     <tr>
       <td>Word</td>
       <td>Count</td>
