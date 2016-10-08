@@ -4,15 +4,15 @@
 
 `cd ~/.../frontend326`
 
-`virtualenv -p <SOME_PYTHON_PATH> venv`
-
 `virtualenv -p /usr/bin/python2.7 venv`
-
-[http://docs.python-guide.org/en/latest/dev/virtualenvs/]
 
 ### Activate virtual environment
 
 `source venv/bin/activate`
+
+or
+ 
+`source venv/bin/activate.csh`
 
 ### Install dependencies
 
