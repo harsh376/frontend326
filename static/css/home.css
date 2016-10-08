@@ -1,0 +1,93 @@
+.logo-container {
+    margin-top: 150px;
+}
+
+.logo-link {
+    display: block;
+    margin: 0 auto;
+    width: 300px;
+    height: 120px;
+}
+
+.logo-image {
+    width: 250px;
+    height: 120px;
+}
+
+.search-form {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    width: 400px;
+}
+
+.search-field {
+    width: 290px;
+    height: 50px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.search-btn {
+    background: #258829;
+    width: 100px;
+    height: 49px;
+    border: 0px;
+    font-size: 15px;
+    color: #dfece5;
+}
+
+.top-twenty-container {
+    margin-top: 40px;
+}
+
+.top-twenty-content-container {
+    width: 500px;
+    display: block;
+    margin: 0 auto;
+}
+
+.top-twenty-header {
+    width: 200px;
+    display: block;
+    margin: 0 auto;
+    color: #6c7090;
+}
+
+.empty-history {
+    width: 200px;
+    display: block;
+    margin: 0 auto;
+    color: #6f85a2;
+    font-style: italic;
+}
+
+#history {
+    width: 300px;
+    margin: 20 auto;
+}
+
+#history tr {
+    height: 30px;
+    background: #eee;
+    border-bottom: 1px solid #c9d0d6;
+}
+
+#history tr.row-headings {
+    background: #c9d0d6;
+    height: 40px;
+}
+
+#history tr th {
+    text-align: left;
+    padding-left: 10px;
+}
+
+#history tr th.col-word {
+    width: 200px;
+}
+
+#history tr td {
+    padding-left: 10px;
+}

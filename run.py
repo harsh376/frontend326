@@ -4,10 +4,21 @@ from bottle import (
     template,
     request,
     error,
+    static_file,
 )
 from utils import get_word_count, update_keywords, get_top_20_keywords
 
 keywords_map = {}
+
+
+@route('/favicon.ico', method='GET')
+def get_favicon():
+    return static_file('favicon.ico', root='static/')
+
+
+@route('/static/<folder>/<filename>')
+def send_file(folder, filename='index.html'):
+    return static_file(filename, root='static/{}/'.format(folder))
 
 
 @route('/')

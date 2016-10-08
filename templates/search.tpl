@@ -1,4 +1,4 @@
-<h2><a href="/">Search Engine</a></h2>
+<h2><a href="/">Back to Home</a></h2>
 <form action="/" method="GET">
   <input type="text" size="100" maxlength="100" name="keywords" placeholder="{{search_string}}">
   <input type="submit" name="save" value="Search">

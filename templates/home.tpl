@@ -1,25 +1,42 @@
-<h2><a href="/">Search Engine</a></h2>
-<form action="/" method="GET">
-  <input type="text" size="100" maxlength="100" name="keywords" placeholder="Search for something">
-  <input type="submit" name="save" value="Search">
-</form>
-<h3>Top 20 Keywords</h3>
+<html>
+  <head>
+    <title>Search Engine</title>
+        <link type="text/css" href="static/css/home.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="logo-container">
+      <a href="/" class="logo-link">
+        <img class="logo-image" src="static/images/search.gif" alt="Search gif">
+      </a>
+    </div>
 
-% if top_20_keywords:
-  <div>
-    <table id="history">
-      <tr>
-        <td>Word</td>
-        <td>Count</td>
-      </tr>
-      %for word, count in top_20_keywords.iteritems():
-        <tr>
-          <td>{{word}}</td>
-          <td>{{count}}</td>
-        </tr>
-      %end
-    </table>
-  </div>
-% else:
-  <div>No search history available</div>
-% end
+    <div class="form-container">
+      <form class="search-form" action="/" method="GET">
+        <input class="search-field" type="text" size="100" maxlength="100" name="keywords" placeholder="Looking for something?">
+        <input class="search-btn" type="submit" name="save" value="Search">
+      </form>
+    </div>
+
+    <div class="top-twenty-container">
+      <div class="top-twenty-content-container">
+        % if top_20_keywords:
+          <h3 class="top-twenty-header">Top 20 Keywords</h3>
+          <table id="history">
+            <tr class="row-headings">
+              <th class="col-word">Word</th>
+              <th class="col-count">Count</th>
+            </tr>
+            %for word, count in top_20_keywords.iteritems():
+              <tr>
+                <td>{{word}}</td>
+                <td>{{count}}</td>
+              </tr>
+            %end
+          </table>
+        % else:
+          <p class="empty-history">No previous searches</p>
+        % end
+      </div>
+    </div>
+  </body>
+</html>
