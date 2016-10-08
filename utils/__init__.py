@@ -1,10 +1,12 @@
 import operator
 from collections import OrderedDict
+from nltk.tokenize import RegexpTokenizer
 
 
 def parse_string(search_string):
     string_lower = search_string.lower()
-    result = string_lower.split()
+    tokenizer = RegexpTokenizer(r'\w+')
+    result = tokenizer.tokenize(string_lower)
     return result
 
 
