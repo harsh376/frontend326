@@ -3,7 +3,7 @@
   <input type="text" size="100" maxlength="100" name="keywords" placeholder="{{search_string}}">
   <input type="submit" name="save" value="Search">
 </form>
-<h3>Search for "{{search_string}}"</h3>
+<h3>Search results for "{{search_string}}"</h3>
 <div>
   <table id="results">
     <tr>

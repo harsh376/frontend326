@@ -29,7 +29,7 @@ def home():
         update_keywords(keywords_map, word_count)
 
         return template(
-            'templates/search',
+            'templates/results',
             search_string=search_string,
             word_count=word_count,
         )
