@@ -25,12 +25,12 @@
 .search-field {
     width: 290px;
     height: 50px;
-    text-align: center;
     font-size: 15px;
+    padding-left: 20px;
 }
 
 .search-btn {
-    background: #258829;
+    background: #29887f;
     width: 100px;
     height: 49px;
     border: 0px;

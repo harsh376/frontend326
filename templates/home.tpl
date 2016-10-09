@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Search Engine</title>
-        <link type="text/css" href="static/css/home.css" rel="stylesheet">
+    <link type="text/css" href="static/css/home.css" rel="stylesheet">
   </head>
   <body>
     <div class="logo-container">
@@ -20,7 +20,7 @@
     <div class="top-twenty-container">
       <div class="top-twenty-content-container">
         % if top_20_keywords:
-          <h3 class="top-twenty-header">Top 20 Keywords</h3>
+          <h3 class="top-twenty-header">TOP 20 KEYWORDS</h3>
           <table id="history">
             <tr class="row-headings">
               <th class="col-word">Word</th>
