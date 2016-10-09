@@ -22,10 +22,6 @@
         % if top_20_keywords:
           <h3 class="top-twenty-header">TOP 20 KEYWORDS</h3>
           <table id="history">
-            <tr class="row-headings">
-              <th class="col-word">Word</th>
-              <th class="col-count">Count</th>
-            </tr>
             %for word, count in top_20_keywords.iteritems():
               <tr>
                 <td>{{word}}</td>

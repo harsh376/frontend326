@@ -23,6 +23,7 @@
 
     <div class="results-content">
       <div class="results-container">
+        <h3 class="results-search-for">Search for "<i>{{search_string}}</i>"</h3>
         <table id="results">
           <tr class="row-headings">
             <th class="col-word">Word</th>
