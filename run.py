@@ -13,6 +13,7 @@ from bottle import (
     error,
     static_file,
     redirect,
+    response,
 )
 from beaker.middleware import SessionMiddleware
 from collections import OrderedDict
@@ -55,6 +56,13 @@ def home():
     s = request.environ.get('beaker.session')
     user = s.get('user')
     email = user.get('email') if user else None
+
+    response.set_header(
+        'Cache-Control',
+        'no-cache, no-store, max-age=0, must-revalidate',
+    )
+    response.set_header('Pragma', 'no-cache')
+    response.set_header('Expires', '0')
 
     if request.GET.save:
         search_string = request.GET.keywords.strip()
