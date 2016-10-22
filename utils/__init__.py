@@ -2,6 +2,7 @@ import operator
 from collections import OrderedDict
 from nltk.tokenize import RegexpTokenizer
 
+
 def parse_string(search_string):
     string_lower = search_string.lower()
     tokenizer = RegexpTokenizer(r'\w+')
