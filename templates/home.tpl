@@ -34,18 +34,22 @@
 
     <div class="top-twenty-container">
       <div class="top-twenty-content-container">
-        % if top_20_keywords:
-          <h3 class="top-twenty-header">TOP 20 KEYWORDS</h3>
-          <table id="history">
-            %for word, count in top_20_keywords.iteritems():
-              <tr>
-                <td>{{word}}</td>
-                <td>{{count}}</td>
-              </tr>
-            %end
-          </table>
+        % if user:
+          % if top_20_keywords:
+            <h3 class="top-twenty-header">TOP 20 KEYWORDS</h3>
+            <table id="history">
+              %for word, count in top_20_keywords.iteritems():
+                <tr>
+                  <td>{{word}}</td>
+                  <td>{{count}}</td>
+                </tr>
+              %end
+            </table>
+          % else:
+            <p class="empty-history">No previous searches</p>
+          % end
         % else:
-          <p class="empty-history">No previous searches</p>
+          <p class="empty-history">Log in to see search history</p>
         % end
       </div>
     </div>

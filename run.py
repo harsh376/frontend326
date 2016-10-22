@@ -15,6 +15,7 @@ from bottle import (
     redirect,
 )
 from beaker.middleware import SessionMiddleware
+from collections import OrderedDict
 from utils import (
     get_word_count,
     update_keywords,
@@ -27,8 +28,7 @@ CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
 SCOPE = ['profile', 'email']
 REDIRECT_URI = 'http://localhost:8080/oauth2callback'
 
-
-keywords_map = {}
+search_history_map = {}
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': 300,
@@ -54,11 +54,18 @@ def home():
     # Fetching user
     s = request.environ.get('beaker.session')
     user = s.get('user')
+    email = user.get('email') if user else None
 
     if request.GET.save:
         search_string = request.GET.keywords.strip()
         word_count = get_word_count(search_string)
-        update_keywords(keywords_map, word_count)
+
+        if email:
+            update_keywords(
+                search_history_map=search_history_map,
+                email=email,
+                data=word_count,
+            )
 
         return template(
             'templates/results',
@@ -67,7 +74,13 @@ def home():
             user=user,
         )
     else:
-        top_20_keywords = get_top_20_keywords(keywords_map)
+        top_20_keywords = OrderedDict()
+        if email:
+            top_20_keywords = get_top_20_keywords(
+                search_history_map=search_history_map,
+                email=email,
+            )
+
         return template(
             'templates/home',
             top_20_keywords=top_20_keywords,
