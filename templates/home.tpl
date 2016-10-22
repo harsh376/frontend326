@@ -3,7 +3,9 @@
     <title>Search Engine</title>
     <link type="text/css" href="static/css/home.css" rel="stylesheet">
   </head>
+  
   <body>
+
     <div class="logo-container">
       <a href="/" class="logo-link">
         <img class="logo-image" src="static/images/search.gif" alt="Search gif">

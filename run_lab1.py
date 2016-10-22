@@ -36,7 +36,7 @@ def home():
     else:
         top_20_keywords = get_top_20_keywords(keywords_map)
         return template(
-            'templates/home',
+            'templates/home_with_login',
             top_20_keywords=top_20_keywords,
         )
 
