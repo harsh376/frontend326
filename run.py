@@ -1,4 +1,5 @@
 import httplib2
+from gevent import monkey
 from oauth2client.client import (
     flow_from_clientsecrets,
     OAuth2WebServerFlow,
@@ -16,13 +17,13 @@ from bottle import (
     response,
 )
 from beaker.middleware import SessionMiddleware
-from collections import OrderedDict
 from utils import (
     get_word_count,
     update_keywords,
     get_history_table,
 )
 
+monkey.patch_all()
 
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
@@ -149,4 +150,4 @@ def mistake404():
     return 'Sorry, this page does not exist!'
 
 if __name__ == '__main__':
-    run(app=app, host='0.0.0.0', port=8080)
+    run(server='gevent', app=app, host='0.0.0.0', port=8080)
