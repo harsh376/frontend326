@@ -19,6 +19,20 @@
           <input class="results-search-btn" type="submit" name="save" value="Search">
         </form>
       </div>
+
+      % if user != None:
+        <div>{{user.get('email')}}</div>
+        <div>
+          <a href="/logout">Log out</a>
+        </div>
+      % else:
+        <div>
+          <a href="/login/google">
+            <img src="static/images/google_signin.png" alt="Sign in">
+          </a>
+        </div>
+      % end
+
     </div>
 
     <div class="results-content">

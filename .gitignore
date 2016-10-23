@@ -1,5 +1,4 @@
 *.pyc
 .idea/
 venv/
-bottle-0.12.7.tar.gz
-bottle-0.12.7/
+data/
