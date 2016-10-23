@@ -40,53 +40,94 @@ def get_updated_mappings(word_count_mapping, data):
     return word_count_mapping
 
 
-def update_keywords(search_history_map, email, data):
+def join_lists(list1, list2):
+    """
+    >>> list1= []
+    >>> list2 = ['a', 'b', 'c', 'b']
+    >>> list1 = join_lists(list1, list2)
+    >>> list1
+    ['a', 'b', 'c']
+
+    >>> list2 = ['b', 'd', 'e']
+    >>> list1 = join_lists(list1, list2)
+    >>> list1
+    ['a', 'b', 'c', 'd', 'e']
+    """
+    combined_list = list1 + list2
+    seen = set()
+    seen_add = seen.add
+    result = [x for x in combined_list if not (x in seen or seen_add(x))]
+    return result
+
+
+def update_keywords(search_history_map, email, data, search_string):
     """
     >>> search_history_map = {}
     >>> email = 'a@email.com'
     >>> data = {'a': 1, 'b': 2}
-    >>> new_mappings = update_keywords(search_history_map, email, data)
+    >>> search_string = 'A b'
+    >>> new_mappings = update_keywords(search_history_map, email, data, search_string)
     >>> new_mappings
-    {'a@email.com': {'a': 1, 'b': 2}}
+    {'a@email.com': {'word_count_map': {'a': 1, 'b': 2}, 'recent_searches': ['a', 'b']}}
 
     >>> data = {'a': 1}
-    >>> update_keywords(new_mappings, email, data)
-    {'a@email.com': {'a': 2, 'b': 2}}
+    >>> update_keywords(new_mappings, email, data, search_string)
+    {'a@email.com': {'word_count_map': {'a': 2, 'b': 2}, 'recent_searches': ['a', 'b']}}
     """
+
     user_entry = search_history_map.get(email)
+    search_string_list = parse_string(search_string)
+
     if not user_entry:
-        search_history_map[email] = get_updated_mappings({}, data)
+        search_history_map[email] = {
+            'word_count_map': get_updated_mappings({}, data),
+            'recent_searches': search_string_list,
+        }
     else:
-        search_history_map[email] = get_updated_mappings(user_entry, data)
+        old_word_count_map = search_history_map[email]['word_count_map']
+        old_recent_searches = search_history_map[email]['recent_searches']
+        search_history_map[email] = {
+            'word_count_map': get_updated_mappings(old_word_count_map, data),
+            'recent_searches': join_lists(search_string_list, old_recent_searches)
+        }
     return search_history_map
 
 
-def get_top_20_keywords(search_history_map, email):
+def get_user_data(search_history_map, email):
     """
     >>> search_history_map = {}
     >>> email = 'a@email.com'
-    >>> get_top_20_keywords(search_history_map, email)
-    OrderedDict()
+    >>> get_user_data(search_history_map, email)
+    {}
 
-    >>> search_history_map = {'b@email.com': {'a': 1, 'b': 2}}
+    >>> data_map = {'a': 1, 'b': 2}
+    >>> search_history_map = {'b@email.com': {'word_count_map': data_map, 'recent_searches': ['a', 'b']}}
     >>> email = 'a@email.com'
-    >>> get_top_20_keywords(search_history_map, email)
-    OrderedDict()
+    >>> get_user_data(search_history_map, email)
+    {}
 
-    >>> search_history_map = {'a@email.com': {'a': 1}}
+    >>> search_history_map = {'a@email.com': {'word_count_map': data_map, 'recent_searches': ['a', 'b']}}
     >>> email = 'a@email.com'
-    >>> get_top_20_keywords(search_history_map, email)
-    OrderedDict([('a', 1)])
+    >>> get_user_data(search_history_map, email)
+    {'word_count_map': {'a': 1, 'b': 2}, 'recent_searches': ['a', 'b']}
     """
 
-    keywords_map = search_history_map.get(email, {})
-    sorted_keywords = sorted(
-        keywords_map.items(),
-        key=operator.itemgetter(1),
-        reverse=True,
-    )
-    top_20_keywords = sorted_keywords[0:20]
-    return OrderedDict(top_20_keywords)
+    user_history = search_history_map.get(email, {})
+    return user_history
+
+
+def get_history_table(search_history_map, email):
+    user_data = get_user_data(search_history_map, email)
+    word_count_map = user_data.get('word_count_map', {})
+    recent_searches = user_data.get('recent_searches', [])
+
+    result = OrderedDict()
+    limit = 10
+    num_results = limit if len(recent_searches) > limit else len(recent_searches)
+    for i in range(num_results):
+        item = recent_searches[i]
+        result[item] = word_count_map[item]
+    return result
 
 if __name__ == "__main__":
     import doctest

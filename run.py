@@ -20,7 +20,7 @@ from collections import OrderedDict
 from utils import (
     get_word_count,
     update_keywords,
-    get_top_20_keywords,
+    get_history_table,
 )
 
 
@@ -74,6 +74,7 @@ def home():
                 search_history_map=search_history_map,
                 email=email,
                 data=word_count,
+                search_string=search_string,
             )
 
         return template(
@@ -83,16 +84,16 @@ def home():
             user=user,
         )
     else:
-        top_20_keywords = OrderedDict()
+        history_table = {}
         if email:
-            top_20_keywords = get_top_20_keywords(
+            history_table = get_history_table(
                 search_history_map=search_history_map,
                 email=email,
             )
 
         return template(
             'templates/home',
-            top_20_keywords=top_20_keywords,
+            history_table=history_table,
             user=user,
         )
 

@@ -35,10 +35,10 @@
     <div class="top-twenty-container">
       <div class="top-twenty-content-container">
         % if user:
-          % if top_20_keywords:
-            <h3 class="top-twenty-header">TOP 20 KEYWORDS</h3>
+          % if history_table:
+            <h3 class="top-twenty-header">RECENT SEARCH KEYWORDS</h3>
             <table id="history">
-              %for word, count in top_20_keywords.iteritems():
+              %for word, count in history_table.iteritems():
                 <tr>
                   <td>{{word}}</td>
                   <td>{{count}}</td>
