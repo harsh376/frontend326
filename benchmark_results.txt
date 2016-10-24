@@ -17,17 +17,20 @@ However, we did on average, received the following value
 4. At a steady state of 1350 connections and 1350 requests, we observed the following system utilization data
 
 	=> CPU Utilization: 	
-			%CPU: 30.5%
-			%user: 26%
-			%system: 4%
+			%CPU: 10.39%
+			%user: 8.10%
+			%system: 2.29%
 	=> Memory Utilization:	
-			MEM%: 6.97%
-			Minor Faults: 135/s 
+			MEM%: 6.59%
+			Minor Faults: 69.69/s 
 			Major Faults: 0/s
 	=> Disk IO Utilization:	
-			Reads: 2 kB/s
-			Writes: 500 kB/s
+			Reads: 0.02 kB/s
+			Writes: 271.14 kB/s
 			Cancelled Writes: 0 writes/s
 	=> Network Utilization:		
 			Sent: 335.142 kB/s
 			Received: 55.42 kB/s
+
+(Note: Steady state was simulate by running benchmark_server.py and then running the network monitoring tools
+   		The values reported were the average results of those tools)
