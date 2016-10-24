@@ -39,7 +39,7 @@ To Monitor our server for CPU Usage, Disk IO and Memory Utilization, run the fol
 	-r: Disk Performance
 	-u: CPU Usage
 	-l: Full Path of command
-	1: Provide input after every 1 second
+	1: Provide output after every 1 second
 
 To Monitor for Network usage, run the following,
 	dstat
