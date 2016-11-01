@@ -20,18 +20,20 @@
         </form>
       </div>
 
-      % if user != None:
-        <div>{{user.get('email')}}</div>
-        <div>
-          <a href="/logout">Log out</a>
-        </div>
-      % else:
-        <div>
-          <a href="/login/google">
-            <img src="static/images/google_signin.png" alt="Sign in">
-          </a>
-        </div>
-      % end
+      <div class="results-login-status">
+        % if user != None:
+          <div>{{user.get('email')}}</div>
+          <div>
+            <a href="/logout">Log out</a>
+          </div>
+        % else:
+          <div>
+            <a href="/login/google">
+              <img src="static/images/google_signin.png" alt="Sign in">
+            </a>
+          </div>
+        % end
+      </div>
 
     </div>
 

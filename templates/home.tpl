@@ -6,18 +6,20 @@
   
   <body>
 
-    % if user != None:
-      <div>{{user.get('email')}}</div>
-      <div>
-        <a href="/logout">Log out</a>
-      </div>
-    % else:
-      <div>
-        <a href="/login/google">
-          <img src="static/images/google_signin.png" alt="Sign in">
-        </a>
-      </div>
-    % end
+    <div class="home-login-status-container">
+      % if user != None:
+        <div>{{user.get('email')}}</div>
+        <div>
+          <a href="/logout">Log out</a>
+        </div>
+      % else:
+        <div>
+          <a href="/login/google">
+            <img src="static/images/google_signin.png" alt="Sign in">
+          </a>
+        </div>
+      % end
+    </div>
 
     <div class="logo-container">
       <a href="/" class="logo-link">
