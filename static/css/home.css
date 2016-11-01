@@ -1,3 +1,8 @@
+.home-login-status-container {
+    width: 100%;
+    text-align: right;
+}
+
 .logo-container {
     margin-top: 150px;
 }
