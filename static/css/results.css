@@ -37,6 +37,12 @@
     color: #dfece5;
 }
 
+.results-login-status {
+    width: 200px;
+    float: right;
+    padding-right: 10px;
+}
+
 .results-content {
     position: absolute;
     top: 90px;
