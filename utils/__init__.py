@@ -18,6 +18,9 @@ def get_word_count(search_string):
         result[w] = count + 1
     return result
 
+def get_first_word(search_string):
+    words = parse_string(search_string)
+    return words[0]
 
 def get_updated_mappings(word_count_mapping, data):
     """
@@ -128,6 +131,38 @@ def get_history_table(search_history_map, email):
         item = recent_searches[i]
         result[item] = word_count_map[item]
     return result
+
+
+def word_to_wordid(cursor, search_string):
+    cursor.execute("""SELECT * FROM lexicon WHERE word='%s';""" %(search_string))
+    wordid = cursor.fetchone()
+    if wordid is None:
+        return None
+    return wordid[0]
+
+def doc_id_from_word_id(cursor, wordid):
+    cursor.execute("""SELECT doc_id FROM inverted_index WHERE word_id='%s';""" %(wordid))
+    tempval = cursor.fetchall()
+    docids = [i[0] for i in tempval]
+    return docids
+
+def page_ranks_from_doc_id(cursor, docids):
+    sql="select * from page_ranks where doc_id in ({seq})".format(seq=','.join(['?']*len(docids)))
+    cursor.execute(sql, docids)
+    tempval = cursor.fetchall()
+    orderedRanks = sorted(tempval, key = lambda element : element[1])
+    tempval = [i[0] for i in orderedRanks]
+    tempval.reverse()
+    return tempval
+
+def urls_of_pages(cursor, pages):
+    #sql_query = 'SELECT name FROM studens WHERE id in (' + ','.join(map(str, pages)) + ')'
+    #print sql_query  
+    sql="select title,url from doc_index where id in ({seq})".format(seq=','.join(['?']*len(pages)))
+    #print sql
+    cursor.execute(sql, pages)
+    pages = cursor.fetchall()
+    return [(str(i[0]),str(i[1])) for i in pages]
 
 if __name__ == "__main__":
     import doctest
