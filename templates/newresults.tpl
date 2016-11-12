@@ -44,7 +44,9 @@
           %for word in result:
           <div>
               <div class="results-container">{{word[0]}}</div>
-              <div class="results-container"><a href="{{word[1]}}">{{word[1]}}</a></div>
+              <div class="results-container">
+                <a href="{{word[1]}}" target="_blank">{{word[1]}}</a>
+              </div>
           </div>
           %end
     </div>
