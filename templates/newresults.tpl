@@ -61,7 +61,7 @@
           <button name="nav" value="{{num}}">{{num}}</button>
         %end
 
-        % if (currRow+5) >= val:
+        % if (currRow+10) >= val:
           <button name="nav" value="nextPage" disabled>&gt;</button>
         % else:
           <button name="nav" value="nextPage">&gt;</button>

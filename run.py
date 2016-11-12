@@ -59,6 +59,7 @@ curr_row = None
 orderedURLS = None
 maxPage = None
 
+EntryPerPage = 10
 @route('/favicon.ico', method='GET')
 def get_favicon():
     return static_file('favicon.ico', root='static/')
@@ -79,21 +80,21 @@ def results():
     global currentPage
 
     if up == "nextPage":
-        curr_row += 5
-        tempval = orderedURLS[curr_row:min(numrows, curr_row+5)]
+        curr_row += EntryPerPage
+        tempval = orderedURLS[curr_row:min(numrows, curr_row+EntryPerPage)]
         currentPage += 1
         result = tempval
 
     elif up == "prevPage":
-        curr_row -= 5
+        curr_row -= EntryPerPage
         currentPage -= 1
-        tempval = orderedURLS[curr_row:curr_row+5]
+        tempval = orderedURLS[curr_row:curr_row+EntryPerPage]
         result = tempval
  
     else:
         currentPage = int(up)
-        curr_row = (currentPage - 1)*5
-        tempval = orderedURLS[curr_row:curr_row+5]
+        curr_row = (currentPage - 1)*EntryPerPage
+        tempval = orderedURLS[curr_row:curr_row+EntryPerPage]
         result = tempval
  
     #range of pages
@@ -163,11 +164,11 @@ def home():
         global curr_row
         curr_row = 0
         global maxPage
-        maxPage = int(math.ceil(float(numrows)/5))
+        maxPage = int(math.ceil(float(numrows)/EntryPerPage))
         global currentPage
         currentPage = 1
 
-        result = orderedURLS[0:min(numrows, 5)]
+        result = orderedURLS[0:min(numrows, EntryPerPage)]
 
         global ss
         ss = search_string
@@ -257,8 +258,14 @@ def logout():
 
 
 @error(404)
-def mistake404():
-    return 'Sorry, this page does not exist!'
+def mistake404(err):
+    return '<html> \
+                <h2> Sorry, this Page Does Not Exist! </h2> \
+                <div> \
+                    <a href="/"> <h3 class="results-search-for"> Return To Home Page </h3> </a> \
+                </div>  \
+            </html>'
+
 
 if __name__ == '__main__':
     db_conn = sqlite3.connect('backend.db')
