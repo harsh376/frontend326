@@ -1,4 +1,7 @@
+#TODO: Our order isn' working. Page orders.
+
 import httplib2
+import sqlite3
 from gevent import monkey
 from oauth2client.client import (
     flow_from_clientsecrets,
@@ -21,15 +24,22 @@ from utils import (
     get_word_count,
     update_keywords,
     get_history_table,
+    get_first_word,
+    word_to_wordid,
+    doc_id_from_word_id,
+    page_ranks_from_doc_id,
+    urls_of_pages,
 )
+
+import math
 
 monkey.patch_all()
 
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
 SCOPE = ['profile', 'email']
-# REDIRECT_URI = 'http://localhost:8080/oauth2callback'
-REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
+REDIRECT_URI = 'http://localhost:8080/oauth2callback'
+#REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
 
 search_history_map = {}
 session_opts = {
@@ -41,7 +51,15 @@ session_opts = {
 
 app = SessionMiddleware(app(), session_opts)
 
+# My glob vars
+db_conn = None
+ss = None
+numrows = None
+curr_row = None
+orderedURLS = None
+maxPage = None
 
+EntryPerPage = 10
 @route('/favicon.ico', method='GET')
 def get_favicon():
     return static_file('favicon.ico', root='static/')
@@ -51,6 +69,54 @@ def get_favicon():
 def send_file(folder, filename='index.html'):
     return static_file(filename, root='static/{}/'.format(folder))
 
+@route('/', method='POST')
+def results():
+    s = request.environ.get('beaker.session')
+    user = s.get('user')
+    email = user.get('email') if user else None
+
+    up = request.forms.get('nav')
+    global curr_row
+    global currentPage
+
+    if up == "nextPage":
+        curr_row += EntryPerPage
+        tempval = orderedURLS[curr_row:min(numrows, curr_row+EntryPerPage)]
+        currentPage += 1
+        result = tempval
+
+    elif up == "prevPage":
+        curr_row -= EntryPerPage
+        currentPage -= 1
+        tempval = orderedURLS[curr_row:curr_row+EntryPerPage]
+        result = tempval
+ 
+    else:
+        currentPage = int(up)
+        curr_row = (currentPage - 1)*EntryPerPage
+        tempval = orderedURLS[curr_row:curr_row+EntryPerPage]
+        result = tempval
+ 
+    #range of pages
+    if currentPage >= 10:
+        begin = max(currentPage-8, 2)
+        end = min(currentPage+1, maxPage)
+    else:
+        begin = 1
+        end = min(maxPage, 10)
+       
+
+    return template(
+            'templates/newresults',
+            search_string=ss,
+            user=user,
+            result=result,
+            currRow=curr_row,
+            val=numrows,
+            url=format(request.url),
+            currentPage=currentPage,
+            range=range(begin,end+1),
+            )
 
 @route('/')
 def home():
@@ -68,7 +134,48 @@ def home():
 
     if request.GET.save:
         search_string = request.GET.keywords.strip()
+        if not search_string:
+            return template(
+                'templates/empty',
+                search_string=search_string, 
+                user=user,
+            )
+
         word_count = get_word_count(search_string)
+        search_string = get_first_word(search_string)
+
+        cursor = db_conn.cursor()
+
+        # Get the word id from Lexicon
+        wordid = word_to_wordid(cursor, search_string)
+        if not wordid:
+            return template('templates/empty', search_string=search_string, user=user)
+
+        # Get Doc Id's from Word ID
+        docids = doc_id_from_word_id(cursor, wordid)
+        # Get Ranks from Doc Id's 
+        pages = page_ranks_from_doc_id(cursor, docids)
+        # Get URLS to Put in Results
+        global orderedURLS
+        orderedURLS = urls_of_pages(cursor, pages)
+
+        global numrows
+        numrows = len(orderedURLS)
+        global curr_row
+        curr_row = 0
+        global maxPage
+        maxPage = int(math.ceil(float(numrows)/EntryPerPage))
+        global currentPage
+        currentPage = 1
+
+        result = orderedURLS[0:min(numrows, EntryPerPage)]
+
+        global ss
+        ss = search_string
+
+        #range of pages
+        begin = 1
+        end = min(maxPage, 10)
 
         if email:
             update_keywords(
@@ -79,10 +186,15 @@ def home():
             )
 
         return template(
-            'templates/results',
+            'templates/newresults',
             search_string=search_string,
-            word_count=word_count,
             user=user,
+            result=result,
+            currRow=curr_row,
+            val=numrows,
+            url=format(request.url),
+            currentPage=currentPage,
+            range=range(begin,end+1),
         )
     else:
         history_table = {}
@@ -146,8 +258,15 @@ def logout():
 
 
 @error(404)
-def mistake404():
-    return 'Sorry, this page does not exist!'
+def mistake404(err):
+    return '<html> \
+                <h2> Sorry, this Page Does Not Exist! </h2> \
+                <div> \
+                    <a href="/"> <h3 class="results-search-for"> Return To Home Page </h3> </a> \
+                </div>  \
+            </html>'
+
 
 if __name__ == '__main__':
+    db_conn = sqlite3.connect('backend.db')
     run(server='gevent', app=app, host='0.0.0.0', port=8080)
