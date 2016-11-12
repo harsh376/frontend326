@@ -1,5 +1,4 @@
-#TODO: Our order isn' working. Page orders.
-
+import math
 import httplib2
 import sqlite3
 from gevent import monkey
@@ -25,13 +24,8 @@ from utils import (
     update_keywords,
     get_history_table,
     get_first_word,
-    word_to_wordid,
-    doc_id_from_word_id,
-    page_ranks_from_doc_id,
-    urls_of_pages,
+    search_db,
 )
-
-import math
 
 monkey.patch_all()
 
@@ -60,6 +54,8 @@ orderedURLS = None
 maxPage = None
 
 EntryPerPage = 10
+
+
 @route('/favicon.ico', method='GET')
 def get_favicon():
     return static_file('favicon.ico', root='static/')
@@ -68,6 +64,7 @@ def get_favicon():
 @route('/static/<folder>/<filename>')
 def send_file(folder, filename='index.html'):
     return static_file(filename, root='static/{}/'.format(folder))
+
 
 @route('/', method='POST')
 def results():
@@ -97,26 +94,26 @@ def results():
         tempval = orderedURLS[curr_row:curr_row+EntryPerPage]
         result = tempval
  
-    #range of pages
+    # range of pages
     if currentPage >= 10:
         begin = max(currentPage-8, 2)
         end = min(currentPage+1, maxPage)
     else:
         begin = 1
         end = min(maxPage, 10)
-       
 
     return template(
-            'templates/newresults',
-            search_string=ss,
-            user=user,
-            result=result,
-            currRow=curr_row,
-            val=numrows,
-            url=format(request.url),
-            currentPage=currentPage,
-            range=range(begin,end+1),
-            )
+        'templates/newresults',
+        search_string=ss,
+        user=user,
+        result=result,
+        currRow=curr_row,
+        val=numrows,
+        url=format(request.url),
+        currentPage=currentPage,
+        range=range(begin, end+1),
+    )
+
 
 @route('/')
 def home():
@@ -144,20 +141,16 @@ def home():
         word_count = get_word_count(search_string)
         search_string = get_first_word(search_string)
 
-        cursor = db_conn.cursor()
-
-        # Get the word id from Lexicon
-        wordid = word_to_wordid(cursor, search_string)
-        if not wordid:
-            return template('templates/empty', search_string=search_string, user=user)
-
-        # Get Doc Id's from Word ID
-        docids = doc_id_from_word_id(cursor, wordid)
-        # Get Ranks from Doc Id's 
-        pages = page_ranks_from_doc_id(cursor, docids)
-        # Get URLS to Put in Results
+        # Fetch relevant URLs ordered by page rank
         global orderedURLS
-        orderedURLS = urls_of_pages(cursor, pages)
+        orderedURLS = search_db(db_conn=db_conn, word=search_string)
+
+        if not orderedURLS:
+            return template(
+                'templates/empty',
+                search_string=search_string,
+                user=user,
+            )
 
         global numrows
         numrows = len(orderedURLS)
@@ -173,7 +166,7 @@ def home():
         global ss
         ss = search_string
 
-        #range of pages
+        # range of pages
         begin = 1
         end = min(maxPage, 10)
 
