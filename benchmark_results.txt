@@ -1,0 +1,50 @@
+To improve for performance, we implemented non-blocking event handling using gevent. Greenlets- the unit of execution for a gevent server, simulates multithreading and thereby significantly improved the performance of the server.
+
+1. We noted that as we increased the number of concurrent connections (-c), the Apache benchmark turned rather non-deterministic between 1000-1350 connections.
+However, we did on average, received the following value
+
+	=> MAX Connections Before Drop = 1350
+
+2. When Operating on this, and averaged over 5 successful runs (not always consecutive due to non determinism of Apache test framework), we received the following
+
+	=> Requests per second = 72.50 [#/sec]
+
+3. Under these conditions, we evaluated more metrics,
+
+	=> Average Response Time of 1350 Requests = 13.794 ms (mean, across all concurrent requests)
+	=> 99% Response Time = (Time to Serve 99% of Requests) / (0.99*1350) = 12.78 (mean, across all concurrent requests)
+
+4. At a steady state of 1350 connections and 1350 requests, we observed the following system utilization data
+
+	=> CPU Utilization: 	
+			%CPU: 11.64%
+			%user: 9.17%
+			%system: 2.47%
+	=> Memory Utilization:	
+			MEM%: 6.97%
+			Minor Faults: 77.96/s 
+			Major Faults: 0/s
+	=> Disk IO Utilization:	
+			Reads: 0.09 kB/s
+			Writes: 311.85 kB/s
+			Cancelled Writes: 0 writes/s
+	=> Network Utilization:		
+			Sent: 335.142 kB/s
+			Received: 55.42 kB/s
+
+(Note: Steady state was simulate by running benchmark_server.py and then running the network monitoring tools
+   		The values reported were the average results of those tools)
+
+COMPARISON WITH LAB 2
+A little unexpectedly, we did not notice a whole lot of difference between Labs 2 and 3. The server is able to handle the 1350 connections concurrently before dropping and averages very similar values for the Requests Per Second and Response Times. 
+
+The CPU Utilization has gone up slightly by around 1% while the Memory Utilization has also increased by 0.5%. 
+Significantly, the Disk IO shows the greatest increase as Reads have increased 4x from 0.02 to 0.09 kB/s while the writes have increased from 271.14 kB/s to 311.85 kB/s.
+
+Due to the addition of Persistent storage, one might have expected these values to change by a greater degree, however there are several reasons why this may not be the case:
+a. Our frontend only makes 1 SQL Query Call due to the use of Join Statements. This reduces the memory and IO overhead as compared to, say Queries to mutliple table such as Lexicon, Inverted Index, Page Ranks and so on. 
+b. When we first run the frontend, the first few Reads from the database will have to be read from Disk and brought to memory. This explains the increased Disk Reads and Writes per second as it includes the Initial Reading of the database amortized over a number of cycles
+c. The Apache Testing framework does not allow for changing the search queries for each connection. So given that each run of ab uses the same query, there will be a read miss on the first access and then, its possible that the value gets stored in the hardware cache and can be read without having to go to Memory. This explains why the Memory Utlization has increased only by a small fraction as compared to the increase in disk access.
+d. The latency of the various operations involved due to the addition of persistent storage is still responsible for increasing the CPU Time in comparison with Lab 2.
+
+The above highlight the various reasons why we have seen a slight reduction in system performance in Comparison with Lab2. However, these numbers are still of comparable due to what we speculate to be prefetching and Hardware Caches which reduce the number of cycles required for the frontend to read from a database.
