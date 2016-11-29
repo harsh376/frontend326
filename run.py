@@ -1,6 +1,7 @@
 import math
 import httplib2
 import sqlite3
+import enchant
 from gevent import monkey
 from oauth2client.client import (
     flow_from_clientsecrets,
@@ -33,8 +34,8 @@ monkey.patch_all()
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
 SCOPE = ['profile', 'email']
-# REDIRECT_URI = 'http://localhost:8080/oauth2callback'
-REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
+REDIRECT_URI = 'http://localhost:8080/oauth2callback'
+#REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
 
 search_history_map = {}
 session_opts = {
@@ -61,6 +62,9 @@ ignored_words = [
             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
             'u', 'v', 'w', 'x', 'y', 'z', 'and', 'or',
         ]
+d = enchant.Dict("en_US")
+oldsearch = None
+suggestedsearch = None
 
 @route('/favicon.ico', method='GET')
 def get_favicon():
@@ -108,6 +112,7 @@ def results():
         begin = 1
         end = min(maxPage, 10)
 
+    #print ss, result
     return template(
         'templates/newresults',
         search_string=ss,
@@ -118,7 +123,9 @@ def results():
         url=format(request.url),
         currentPage=currentPage,
         range=range(begin, end+1),
-        missingwords=missingwords
+        missingwords=missingwords,
+        oldsearch = oldsearch,
+        suggestedsearch=suggestedsearch
     )
 
 
@@ -149,7 +156,20 @@ def home():
         words = get_all_words(search_string)
         words = [i for i in words if i not in ignored_words]
         
-        # get list of combined urls
+        global oldsearch
+        oldsearch = None
+        global suggestedsearch
+        suggestedsearch = None
+
+        for i,word in enumerate(words):
+            if not d.check(word):
+                oldsearch = search_string
+                #suggestedsearch = d.suggest(search_string)
+                suggested_word = d.suggest(search_string)[0]
+                words[i] = suggested_word
+            
+
+        # Fetch relevant URLs ordered by page rank
         global orderedURLS
         orderedURLS = None
         
@@ -158,6 +178,7 @@ def home():
         global missingwords
         missingwords = []
 
+        # get list of combined urls
         for word in words:
             wlist = search_db(db_conn=db_conn, word=word)
             if wlist is None or (len(wlist) == 0):
@@ -227,6 +248,8 @@ def home():
             currentPage=currentPage,
             range=range(begin,end+1),
             missingwords=missingwords,
+            oldsearch = oldsearch,
+            suggestedsearch=suggestedsearch
         )
     else:
         history_table = {}
