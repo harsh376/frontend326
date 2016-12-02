@@ -54,7 +54,7 @@ curr_row = None
 orderedURLS = None
 missingwords = None
 maxPage = None
-EntryPerPage = 7
+EntryPerPage = 5
 ignored_words = [
             '', 'the', 'of', 'at', 'on', 'in', 'is', 'it',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -174,6 +174,8 @@ def home():
 
         # remove duplicate missing words
         missingwords = list(set(missingwords))
+        if (len(missingwords) == 0):
+            missingwords = None
 
         # resort based on page rank
         orderedURLS = sorted(orderedURLS, key=lambda x: x[2])

@@ -48,12 +48,14 @@
                 <a href="{{word[1]}}" target="_blank">{{word[1]}}</a>
               </div>
               <div class="results-container">{{word[2]}}</div>
+              %if missingwords is not None:
               <div class="results-container">
                 <i>Missing </i>
                 %for miss in missingwords:
                 <strike>{{miss}} </strike>
                 %end
               </div>
+              %end
           </div>
           <br/>
           %end
