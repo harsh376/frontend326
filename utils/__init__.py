@@ -139,7 +139,11 @@ def search_db(db_conn, word):
     cursor = db_conn.cursor()
     cursor.execute(
         """
-        SELECT DISTINCT doc_index.title, doc_index.url, page_ranks.rank
+        SELECT DISTINCT
+            doc_index.title,
+            doc_index.url,
+            doc_index.id,
+            page_ranks.rank
         FROM lexicon, doc_index, inverted_index, page_ranks
         WHERE
             lexicon.id = inverted_index.word_id AND
@@ -152,6 +156,28 @@ def search_db(db_conn, word):
     )
     result = cursor.fetchall()
     return result
+
+
+def get_snippets(db_conn):
+    cursor = db_conn.cursor()
+    cursor.execute(
+        """
+        SELECT inverted_index.doc_id, snippets.text
+        FROM inverted_index, snippets
+        WHERE
+            inverted_index.snippet_id = snippets.id
+        """
+    )
+    result = cursor.fetchall()
+    docid_snippet = {}
+    for r in result:
+        doc_id, snippet = r[0], r[1]
+        temp = docid_snippet.get(doc_id)
+        if temp:
+            docid_snippet[doc_id].append(snippet)
+        else:
+            docid_snippet[doc_id] = [snippet]
+    return docid_snippet
 
 if __name__ == "__main__":
     import doctest

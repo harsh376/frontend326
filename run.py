@@ -25,6 +25,7 @@ from utils import (
     get_history_table,
     get_first_word,
     search_db,
+    get_snippets,
 )
 
 monkey.patch_all()
@@ -51,6 +52,7 @@ ss = None
 numrows = None
 curr_row = None
 orderedURLS = None
+snippets = None
 maxPage = None
 
 EntryPerPage = 10
@@ -145,6 +147,9 @@ def home():
         global orderedURLS
         orderedURLS = search_db(db_conn=db_conn, word=search_string)
 
+        global snippets
+        snippets = get_snippets(db_conn=db_conn)
+
         if not orderedURLS:
             return template(
                 'templates/empty',
@@ -188,6 +193,7 @@ def home():
             url=format(request.url),
             currentPage=currentPage,
             range=range(begin,end+1),
+            snippets=snippets,
         )
     else:
         history_table = {}
