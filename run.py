@@ -52,8 +52,9 @@ ss = None
 numrows = None
 curr_row = None
 orderedURLS = None
+missingwords = None
 maxPage = None
-EntryPerPage = 10
+EntryPerPage = 7
 ignored_words = [
             '', 'the', 'of', 'at', 'on', 'in', 'is', 'it',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -117,6 +118,7 @@ def results():
         url=format(request.url),
         currentPage=currentPage,
         range=range(begin, end+1),
+        missingwords=missingwords
     )
 
 
@@ -145,18 +147,34 @@ def home():
 
         word_count = get_word_count(search_string)
         words = get_all_words(search_string)
-        words = [i for i in words if i.lower() not in ignored_words]
+        words = [i for i in words if i not in ignored_words]
         
         # get list of combined urls
         global orderedURLS
         orderedURLS = None
+        
+        intersectionList = []
+
+        global missingwords
+        missingwords = []
+
         for word in words:
             wlist = search_db(db_conn=db_conn, word=word)
+            if wlist is None or (len(wlist) == 0):
+                missingwords = missingwords + [word]
+            # Store all the links as well
+            intersectionList = intersectionList + list(set(wlist) - set(intersectionList))
             if orderedURLS is not None: 
                 orderedURLS = list(set(orderedURLS).intersection(wlist))
             else:
                 orderedURLS = wlist
         
+        if orderedURLS is None or (len(orderedURLS) == 0):
+            orderedURLS = intersectionList
+
+        # remove duplicate missing words
+        missingwords = list(set(missingwords))
+
         # resort based on page rank
         orderedURLS = sorted(orderedURLS, key=lambda x: x[2])
 
@@ -203,6 +221,7 @@ def home():
             url=format(request.url),
             currentPage=currentPage,
             range=range(begin,end+1),
+            missingwords=missingwords,
         )
     else:
         history_table = {}

@@ -43,13 +43,19 @@
         <p class="results-search-for"><i>Page {{currentPage}} of {{val}} results</i></p>
           %for word in result:
           <div>
-              <div class="results-container">{{word[0]}}</div>
+              <div class="results-container"><b>{{word[0]}}</b></div>
               <div class="results-container">
                 <a href="{{word[1]}}" target="_blank">{{word[1]}}</a>
               </div>
               <div class="results-container">{{word[2]}}</div>
-              <br>
+              <div class="results-container">
+                <i>Missing </i>
+                %for miss in missingwords:
+                <strike>{{miss}} </strike>
+                %end
+              </div>
           </div>
+          <br/>
           %end
     </div>
 
