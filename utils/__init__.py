@@ -139,13 +139,14 @@ def search_db(db_conn, word):
     cursor = db_conn.cursor()
     cursor.execute(
         """
-        SELECT DISTINCT doc_index.title, doc_index.url, page_ranks.rank
-        FROM lexicon, doc_index, inverted_index, page_ranks
+        SELECT DISTINCT doc_index.title, doc_index.url, summaries.text, page_ranks.rank
+        FROM lexicon, doc_index, inverted_index, page_ranks, summaries
         WHERE
             lexicon.id = inverted_index.word_id AND
             inverted_index.doc_id = doc_index.id AND
-            inverted_index.doc_id = page_ranks.doc_id
-            AND lexicon.word = ?
+            inverted_index.doc_id = page_ranks.doc_id AND
+            inverted_index.doc_id = summaries.doc_id AND
+            lexicon.word = ?
         ORDER BY page_ranks.rank
         """,
         (word,),
