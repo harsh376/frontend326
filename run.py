@@ -24,6 +24,7 @@ from utils import (
     update_keywords,
     get_history_table,
     get_first_word,
+    get_all_words,
     search_db,
 )
 
@@ -51,10 +52,15 @@ ss = None
 numrows = None
 curr_row = None
 orderedURLS = None
+missingwords = None
 maxPage = None
-
-EntryPerPage = 10
-
+EntryPerPage = 5
+ignored_words = [
+            '', 'the', 'of', 'at', 'on', 'in', 'is', 'it',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z', 'and', 'or',
+        ]
 
 @route('/favicon.ico', method='GET')
 def get_favicon():
@@ -112,6 +118,7 @@ def results():
         url=format(request.url),
         currentPage=currentPage,
         range=range(begin, end+1),
+        missingwords=missingwords
     )
 
 
@@ -139,11 +146,42 @@ def home():
             )
 
         word_count = get_word_count(search_string)
-        search_string = get_first_word(search_string)
-
-        # Fetch relevant URLs ordered by page rank
+        words = get_all_words(search_string)
+        words = [i for i in words if i not in ignored_words]
+        
+        # get list of combined urls
         global orderedURLS
-        orderedURLS = search_db(db_conn=db_conn, word=search_string)
+        orderedURLS = None
+        
+        intersectionList = []
+
+        global missingwords
+        missingwords = []
+
+        for word in words:
+            wlist = search_db(db_conn=db_conn, word=word)
+            if wlist is None or (len(wlist) == 0):
+                missingwords = missingwords + [word]
+            # Store all the links as well
+            intersectionList = intersectionList + list(set(wlist) - set(intersectionList))
+            if orderedURLS is not None: 
+                orderedURLS = list(set(orderedURLS).intersection(wlist))
+            else:
+                orderedURLS = wlist
+        
+        if orderedURLS is None or (len(orderedURLS) == 0):
+            orderedURLS = intersectionList
+
+        # remove duplicate missing words
+        missingwords = list(set(missingwords))
+        if (len(missingwords) == 0):
+            missingwords = None
+
+        # resort based on page rank
+        orderedURLS = sorted(orderedURLS, key=lambda x: x[2])
+        intersectionList = sorted(intersectionList, key=lambda x: x[2])
+        c = orderedURLS+intersectionList
+        orderedURLS = sorted(set(c), key=lambda x: c.index(x))
 
         if not orderedURLS:
             return template(
@@ -188,6 +226,7 @@ def home():
             url=format(request.url),
             currentPage=currentPage,
             range=range(begin,end+1),
+            missingwords=missingwords,
         )
     else:
         history_table = {}
