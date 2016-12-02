@@ -179,6 +179,9 @@ def home():
 
         # resort based on page rank
         orderedURLS = sorted(orderedURLS, key=lambda x: x[2])
+        intersectionList = sorted(intersectionList, key=lambda x: x[2])
+        c = orderedURLS+intersectionList
+        orderedURLS = sorted(set(c), key=lambda x: c.index(x))
 
         if not orderedURLS:
             return template(
