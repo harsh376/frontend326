@@ -23,6 +23,9 @@ def get_first_word(search_string):
     words = parse_string(search_string)
     return words[0]
 
+def get_all_words(search_string):
+    words = parse_string(search_string)
+    return words
 
 def get_updated_mappings(word_count_mapping, data):
     """

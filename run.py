@@ -24,6 +24,7 @@ from utils import (
     update_keywords,
     get_history_table,
     get_first_word,
+    get_all_words,
     search_db,
 )
 
@@ -52,9 +53,13 @@ numrows = None
 curr_row = None
 orderedURLS = None
 maxPage = None
-
 EntryPerPage = 10
-
+ignored_words = [
+            '', 'the', 'of', 'at', 'on', 'in', 'is', 'it',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z', 'and', 'or',
+        ]
 
 @route('/favicon.ico', method='GET')
 def get_favicon():
@@ -139,11 +144,21 @@ def home():
             )
 
         word_count = get_word_count(search_string)
-        search_string = get_first_word(search_string)
-
-        # Fetch relevant URLs ordered by page rank
+        words = get_all_words(search_string)
+        words = [i for i in words if i.lower() not in ignored_words]
+        
+        # get list of combined urls
         global orderedURLS
-        orderedURLS = search_db(db_conn=db_conn, word=search_string)
+        orderedURLS = None
+        for word in words:
+            wlist = search_db(db_conn=db_conn, word=word)
+            if orderedURLS is not None: 
+                orderedURLS = list(set(orderedURLS).intersection(wlist))
+            else:
+                orderedURLS = wlist
+        
+        # resort based on page rank
+        orderedURLS = sorted(orderedURLS, key=lambda x: x[2])
 
         if not orderedURLS:
             return template(
