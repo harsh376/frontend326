@@ -2,6 +2,32 @@
   <head>
     <title>Search Results</title>
     <link type="text/css" href="static/css/results.css" rel="stylesheet">
+    <script>
+    function showResult(str) {
+    if (str.length==0) { 
+      document.getElementById("livesearch").innerHTML="";
+      document.getElementById("livesearch").style.border="0px";
+      return;
+    }
+    document.getElementById("livesearch").innerHTML="abc";        
+    if (window.XMLHttpRequest) {
+      // code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+    } else {  // code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function() {
+      if (this.readyState==4 && this.status==200) {
+        document.getElementById("livesearch").innerHTML=this.responseText;
+        document.getElementById("livesearch").style.border="1px solid #A5ACB2";
+      }
+    }
+    var newst = str.concat("&save=Search");
+    newst = "/?sug=".concat(newst)
+    xmlhttp.open("GET", newst, true);
+    xmlhttp.send();
+  }
+  </script>
   </head>
 
   <body>
@@ -15,9 +41,10 @@
 
       <div class="results-form-container">
         <form action="/" method="GET">
-          <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{search_string}}">
+          <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{search_string}}" onkeyup="showResult(this.value)">
           <input class="results-search-btn" type="submit" name="save" value="Search">
         </form>
+        <div id="livesearch"></div>
       </div>
 
       <div class="results-login-status">
@@ -39,7 +66,7 @@
 
     <div class="results-content">
       <div class="results-container">
-        <h3 class="results-search-for">Search for "<i>{{search_string}}</i>"</h3>
+        <h3 class="results-search-for">Searching for "<i>{{search_string}}</i>"</h3>
         <p class="results-search-for"><i>Page {{currentPage}} of {{val}} results</i></p>
           %for word in result:
           <div>

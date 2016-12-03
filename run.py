@@ -1,6 +1,7 @@
 import math
 import httplib2
 import sqlite3
+import autocomplete
 from gevent import monkey
 from oauth2client.client import (
     flow_from_clientsecrets,
@@ -29,12 +30,13 @@ from utils import (
 )
 
 monkey.patch_all()
+autocomplete.load()
 
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
 SCOPE = ['profile', 'email']
-# REDIRECT_URI = 'http://localhost:8080/oauth2callback'
-REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
+REDIRECT_URI = 'http://localhost:8080/oauth2callback'
+#REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
 
 search_history_map = {}
 session_opts = {
@@ -108,6 +110,7 @@ def results():
         begin = 1
         end = min(maxPage, 10)
 
+    #print ss, result
     return template(
         'templates/newresults',
         search_string=ss,
@@ -118,7 +121,7 @@ def results():
         url=format(request.url),
         currentPage=currentPage,
         range=range(begin, end+1),
-        missingwords=missingwords
+        missingwords=missingwords,
     )
 
 
@@ -139,17 +142,34 @@ def home():
     if request.GET.save:
         search_string = request.GET.keywords.strip()
         if not search_string:
-            return template(
+            is_suggested_string = request.GET.sug.strip()
+            if not is_suggested_string:
+                return template(
                 'templates/empty',
                 search_string=search_string, 
                 user=user,
             )
 
+            tup = tuple(is_suggested_string.split())
+            print is_suggested_string
+            if len(tup) < 2:
+                return ''
+            else:
+                tup = tup[len(tup)-2:]
+                global autocomplete
+                result = autocomplete.predict(*tup)
+                result = sorted(result, key=lambda x: x[1])[::-1]
+                str = ''
+                is_suggested_string = is_suggested_string.rsplit(' ', 1)[0]+' '
+                for sugg in result:
+                    str = str + '<a href="/?keywords='+is_suggested_string+sugg[0]+'&save=search">'+sugg[0]+'</a><br/>'
+                return str
+
+            
         word_count = get_word_count(search_string)
         words = get_all_words(search_string)
         words = [i for i in words if i not in ignored_words]
         
-        # get list of combined urls
         global orderedURLS
         orderedURLS = None
         
@@ -158,6 +178,7 @@ def home():
         global missingwords
         missingwords = []
 
+        # get list of combined urls
         for word in words:
             wlist = search_db(db_conn=db_conn, word=word)
             if wlist is None or (len(wlist) == 0):
