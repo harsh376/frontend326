@@ -70,7 +70,7 @@
           %end
     </div>
 
-    <div>
+      <div>
       <form action={{url}} method="POST">
         % if currRow == 0:      
           <button name="nav" value="prevPage" disabled>&lt;</button>
@@ -91,13 +91,14 @@
       </form>
     </div>
 
-    <div>
+      <div>
         % if suggestedsearch is not None:
            <h4>Did you mean"</h4>
            %for word in suggestedsearch:
                 <a href="/?keywords={{word}}&save=search">{{word}} </a>
            %end
         %end
+    </div>
     </div>
   </body>
 </html>
