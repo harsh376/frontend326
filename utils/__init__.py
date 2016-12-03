@@ -1,6 +1,8 @@
 import operator
 from collections import OrderedDict
 from nltk.tokenize import RegexpTokenizer
+import ast
+import operator as op
 
 
 def parse_string(search_string):
@@ -156,6 +158,43 @@ def search_db(db_conn, word):
     )
     result = cursor.fetchall()
     return result
+
+# supported operators
+operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
+             ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
+             ast.USub: op.neg}
+
+
+def eval_expr(expr):
+    """
+    >>> eval_expr('2^6')
+    4
+    >>> eval_expr('2**6')
+    64
+    >>> eval_expr('1 + 2*3**(4^5) / (6 + -7)')
+    -5.0
+    >>> eval_expr('something t')
+
+    """
+    res = None
+    try:
+        temp = ast.parse(expr, mode='eval').body
+        res = eval_(temp)
+    except:
+        pass
+    return res
+
+
+def eval_(node):
+    if isinstance(node, ast.Num): # <number>
+        return node.n
+    elif isinstance(node, ast.BinOp): # <left> <operator> <right>
+        return operators[type(node.op)](eval_(node.left), eval_(node.right))
+    elif isinstance(node, ast.UnaryOp): # <operator> <operand> e.g., -1
+        return operators[type(node.op)](eval_(node.operand))
+    else:
+        raise TypeError(node)
+
 
 if __name__ == "__main__":
     import doctest

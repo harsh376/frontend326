@@ -27,6 +27,7 @@ from utils import (
     get_first_word,
     get_all_words,
     search_db,
+    eval_expr,
 )
 
 monkey.patch_all()
@@ -150,6 +151,16 @@ def home():
                 'templates/empty',
                 search_string=search_string, 
                 user=user,
+            )
+
+        value = eval_expr(search_string)
+
+        if value:
+            return template(
+                'templates/calculator',
+                search_string=search_string,
+                user=user,
+                value=value,
             )
 
         word_count = get_word_count(search_string)
