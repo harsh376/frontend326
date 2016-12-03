@@ -164,6 +164,7 @@ operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
              ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
              ast.USub: op.neg}
 
+
 def eval_expr(expr):
     """
     >>> eval_expr('2^6')
@@ -172,8 +173,17 @@ def eval_expr(expr):
     64
     >>> eval_expr('1 + 2*3**(4^5) / (6 + -7)')
     -5.0
+    >>> eval_expr('something t')
+
     """
-    return eval_(ast.parse(expr, mode='eval').body)
+    res = None
+    try:
+        temp = ast.parse(expr, mode='eval').body
+        res = eval_(temp)
+    except:
+        pass
+    return res
+
 
 def eval_(node):
     if isinstance(node, ast.Num): # <number>
@@ -184,7 +194,6 @@ def eval_(node):
         return operators[type(node.op)](eval_(node.operand))
     else:
         raise TypeError(node)
-
 
 
 if __name__ == "__main__":

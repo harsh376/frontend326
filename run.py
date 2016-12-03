@@ -152,19 +152,16 @@ def home():
                 search_string=search_string, 
                 user=user,
             )
-        value = None
-        try:
-            value = eval_expr(search_string)
-        except TypeError:
-            value = None
 
-        if value is not None:
+        value = eval_expr(search_string)
+
+        if value:
             return template(
                 'templates/calculator',
                 search_string=search_string,
                 user=user,
-                value=value
-                )
+                value=value,
+            )
 
         word_count = get_word_count(search_string)
         words = get_all_words(search_string)
