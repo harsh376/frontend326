@@ -6,6 +6,7 @@
     <script>
       function showResult(search_query) {
         if (search_query.length === 0) {
+          document.getElementById("livesearch").innerHTML="";
           return;
         }
 
