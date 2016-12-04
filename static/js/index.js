@@ -4,10 +4,25 @@ function set(op) {
 
 }
 
+function percent() {
+    var tempStore = document.getElementById("display").value;
+    document.getElementById("display").value = eval(tempStore+'/100')   
+}
+
 function sqrRoot() {
     var tempStore = document.getElementById("display").value;
     document.getElementById("display").value = eval(Math.sqrt(tempStore));
 
+}
+
+function radians() {
+    var tempStore = document.getElementById("display").value;
+    document.getElementById("display").value = eval(tempStore + '* Math.PI / 180'); 
+}
+
+function degrees() {
+    var tempStore = document.getElementById("display").value;
+    document.getElementById("display").value = eval(tempStore + '* 180 / Math.PI'); 
 }
 
 function asine() {
@@ -65,17 +80,38 @@ function answer() {
     Exp.value = result;
 }
 
-function ce() {
+function del() {
 
     var elem = document.getElementById("display").value;
     var length = elem.length;
     length--;
     var a = elem.substr(0, length);
 
-    // document.getElementById("display").value="";
+    //document.getElementById("display").value="";
     //for(var i=0;i<length-1;i++)
     //{
     document.getElementById("display").value = a;
     // }
     //alert(length);
+}
+
+function ce() {
+    var elem = document.getElementById("display").value;
+    document.getElementById("display").value = "";
+}
+
+function fact() {
+    var elem = document.getElementById("display").value;
+    var integ = parseInt(elem)
+    var res = factorial(integ)
+    document.getElementById("display").value = res;   
+}
+
+function factorial(num) {
+  if (num === 0 || num === 1)
+    return 1;
+  for (var i = num - 1; i >= 1; i--) {
+    num *= i;
+  }
+  return num;
 }

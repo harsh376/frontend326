@@ -40,6 +40,9 @@
     <div class="results-content">
       <div class="results-container">
         <h3 class="results-search-for">No Results found for "<i>{{search_string}}</i>"</h3>
+        % if suggestedsearch is not None:
+        <h3 class ="results-search-for">Did you mean <a href="/?keywords={{suggestedsearch}}&save=search">{{suggestedsearch}}</a></h3>
+        % end
     </div>
   </body>
 </html>
