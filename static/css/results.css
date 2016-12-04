@@ -82,3 +82,10 @@
 #results tr td {
     padding-left: 10px;
 }
+
+.autocomplete-sug {
+    border-bottom: 1px solid #fff;
+    height: 20px;
+    background: #cbd9f9;
+    padding: 10px 20px;
+}
