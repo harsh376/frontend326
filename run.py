@@ -151,9 +151,19 @@ def home():
                 suggestedsearch=None,
                 user=user,
             )
+        
+        word_count = get_word_count(search_string) 
 
         value = eval_expr(search_string)
         if value:
+            if email:
+                update_keywords(
+                search_history_map=search_history_map,
+                email=email,
+                data=word_count,
+                search_string=search_string,
+                ) 
+
             return template(
                 'templates/calculator',
                 search_string=search_string,
@@ -162,7 +172,16 @@ def home():
             )
 
         words = get_all_words(search_string)
-        search_string = ' '.join(words)        
+        search_string = ' '.join(words)
+        
+        if email:
+            update_keywords(
+                search_history_map=search_history_map,
+                email=email,
+                data=word_count,
+                search_string=search_string,
+            ) 
+
         words = [i for i in words if i not in ignored_words]
         sug_words = [word for word in words]
         global suggestedsearch
@@ -241,14 +260,6 @@ def home():
         # range of pages
         begin = 1
         end = min(maxPage, 10)
-
-        if email:
-            update_keywords(
-                search_history_map=search_history_map,
-                email=email,
-                data=word_count,
-                search_string=search_string,
-            )
 
         return template(
             'templates/newresults',
