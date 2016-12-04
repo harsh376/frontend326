@@ -152,14 +152,14 @@ def home():
                 user=user,
             )
 
-            value = eval_expr(search_string)
-            if value:
-                return template(
-                    'templates/calculator',
-                    search_string=search_string,
-                    user=user,
-                    value=value,
-                )
+        value = eval_expr(search_string)
+        if value:
+            return template(
+                'templates/calculator',
+                search_string=search_string,
+                user=user,
+                value=value,
+            )
 
         words = get_all_words(search_string)
         search_string = ' '.join(words)        
