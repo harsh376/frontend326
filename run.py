@@ -94,6 +94,7 @@ def get_autocomplete_results():
             tup = tup[-2:]
             global autocomplete
             result = autocomplete.predict(*tup)
+            result = sorted(result, key=lambda x: x[1])[::-1]
             result = [r[0] for r in result]
             result = result[:5]
 
