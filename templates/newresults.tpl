@@ -27,7 +27,6 @@
 
 
             document.getElementById('livesearch').innerHTML=elements;
-            document.getElementById("livesearch").style.border="1px solid #A5ACB2";
 
             var headerHeight = document.getElementById('results-header').offsetHeight;
             console.log(headerHeight);
