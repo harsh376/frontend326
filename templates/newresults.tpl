@@ -46,46 +46,48 @@
         <h3 class ="results-search-for">Did you mean <a href="/?keywords={{suggestedsearch}}&save=search">{{suggestedsearch}}</a></h3>
         %end
         <p class="results-search-for"><i>Page {{currentPage}} of {{val}} results</i></p>
-          %for word in result:
-          <div>
-              <div class="results-container"><b>{{word[0]}}</b></div>
-              <div class="results-container">
-                <a href="{{word[1]}}" target="_blank">{{word[1]}}</a>
-              </div>
-              <div class="results-container">{{word[2]}}</div>
-              %if missingwords is not None:
-              <div class="results-container">
-                <i>Missing </i>
-                %for miss in missingwords:
-                <strike>{{miss}} </strike>
-                %end
-              </div>
-              %end
+
+        %for word in result:
+        <div>
+          <div class="results-container"><b>{{word[0]}}</b></div>
+          <div class="results-container">
+            <a href="{{word[1]}}" target="_blank">{{word[1]}}</a>
           </div>
-          <br/>
+          <div class="results-container">{{word[2]}}</div>
+
+          %if missingwords is not None:
+          <div class="results-container">
+            <i>Missing </i>
+            %for miss in missingwords:
+            <strike>{{miss}} </strike>
+            %end
+          </div>
           %end
-    </div>
-
-      <div>
-      <form action={{url}} method="POST">
-        % if currRow == 0:      
-          <button name="nav" value="prevPage" disabled>&lt;</button>
-        % else:
-          <button name="nav" value="prevPage">&lt;</button>
-        % end
-
-        % for num in range:
-          <button name="nav" value="{{num}}">{{num}}</button>
+        </div>
+        <br/>
         %end
+      </div>
 
-        % if (currRow+10) >= val:
+      <div class="results-page-numbers">
+        <form action={{url}} method="POST">
+          % if currRow == 0:
+          <button name="nav" value="prevPage" disabled>&lt;</button>
+          % else:
+          <button name="nav" value="prevPage">&lt;</button>
+          % end
+
+          % for num in range:
+          <button name="nav" value="{{num}}">{{num}}</button>
+          %end
+
+          % if (currRow+10) >= val:
           <button name="nav" value="nextPage" disabled>&gt;</button>
-        % else:
+          % else:
           <button name="nav" value="nextPage">&gt;</button>
-        % end
+          % end
+        </form>
+      </div>
 
-      </form>
-    </div>
     </div>
   </body>
 </html>
