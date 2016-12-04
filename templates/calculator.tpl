@@ -51,13 +51,13 @@
           </tr>
           <tr>
             <td>
-              <input id="btnAns" type="button" name="operator" value="Ans" />
+              <input id="btnAns" type="button" name="operator" value="CE" onclick="ce()"/>
             </td>
             <td>
               <input id="btnPi" type="button" name="operator" value="π" onclick="set('3.14')" />
             </td>
             <td>
-              <input id="btnE" type="button" name="operator" value="e" />
+              <input id="btnE" type="button" name="operator" value="e" onclick="set('2.718281828')" />
             </td>
             <td>
               <input id="btnOParen" type="button" name="operator" value="(" onclick="set('(')" />
@@ -66,21 +66,21 @@
               <input id="btnCParen" type="button" name="operator" value=")" onclick="set(')')" />
             </td>
             <td>
-              <input id="btnPcnt" type="button" name="operator" value="%" />
+              <input id="btnPcnt" type="button" name="operator" value="%" onclick="percent()" />
             </td>
             <td>
-              <input id="btnCE" type="button" name="operator" value="CE" onclick="ce()" />
+              <input id="btnCE" type="button" name="operator" value="DEL" onclick="del()" />
             </td>
           </tr>
           <tr>
             <td>
-              <input id="btnRad" type="button" name="operator" value="rad" />
+              <input id="btnRad" type="button" name="operator" value="rad" onclick="radians()"/>
             </td>
             <td>
-              <input id="btnDeg" type="button" name="operator" value="deg" />
+              <input id="btnDeg" type="button" name="operator" value="deg" onclick="degrees()"/>
             </td>
             <td>
-              <input id="btnFact" type="button" name="operator" value="x!" />
+              <input id="btnFact" type="button" name="operator" value="x!" onclick="fact()" />
             </td>
             <td>
               <input id="btn7" type="button" value="7" onclick="set('7')" />
@@ -155,7 +155,7 @@
               <input id="btn0" type="button" value="0" onclick="set('0')" />
             </td>
             <td>
-              <input id="btnPeriod" type="button" value="." />
+              <input id="btnPeriod" type="button" value="." onclick="set('.')"/>
             </td>
             <td>
               <input id="btnEqual" type="button" name="equal" value="=" onclick="answer()" />
