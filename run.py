@@ -37,8 +37,8 @@ autocomplete.load()
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
 SCOPE = ['profile', 'email']
-REDIRECT_URI = 'http://localhost:8080/oauth2callback'
-#REDIRECT_URI = 'http://ec2-52-5-94-6.compute-1.amazonaws.com:8080/oauth2callback'
+# REDIRECT_URI = 'http://localhost:8080/oauth2callback'
+REDIRECT_URI = 'http://ec2-34-193-243-71.compute-1.amazonaws.com:8080/oauth2callback'
 
 search_history_map = {}
 session_opts = {
