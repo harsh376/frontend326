@@ -64,7 +64,6 @@ ignored_words = [
             'u', 'v', 'w', 'x', 'y', 'z', 'and', 'or',
         ]
 d = enchant.Dict("en_US")
-oldsearch = None
 suggestedsearch = None
 
 @route('/favicon.ico', method='GET')
@@ -125,7 +124,6 @@ def results():
         currentPage=currentPage,
         range=range(begin, end+1),
         missingwords=missingwords,
-        oldsearch = oldsearch,
         suggestedsearch=suggestedsearch
     )
 
@@ -149,36 +147,40 @@ def home():
         if not search_string:
             return template(
                 'templates/empty',
-                search_string=search_string, 
-                user=user,
-            )
-
-        value = eval_expr(search_string)
-
-        if value:
-            return template(
-                'templates/calculator',
                 search_string=search_string,
+                suggestedsearch=None,
                 user=user,
-                value=value,
             )
 
-        word_count = get_word_count(search_string)
+            value = eval_expr(search_string)
+            if value:
+                return template(
+                    'templates/calculator',
+                    search_string=search_string,
+                    user=user,
+                    value=value,
+                )
+
         words = get_all_words(search_string)
+        search_string = ' '.join(words)        
         words = [i for i in words if i not in ignored_words]
-        
-        global oldsearch
-        oldsearch = None
+        sug_words = [word for word in words]
         global suggestedsearch
         suggestedsearch = None
-
+        changed_something = False
         for i,word in enumerate(words):
             if not d.check(word):
-                oldsearch = search_string
-                #suggestedsearch = d.suggest(search_string)
-                suggested_word = d.suggest(search_string)[0]
-                words[i] = suggested_word
-            
+                suggested_word = d.suggest(word)[0]
+                if not suggested_word or (suggested_word.lower() == word):
+                    continue
+                changed_something = True
+                sug_words[i] = suggested_word
+
+        if len(words) != 0:
+            suggestedsearch = ' '.join(sug_words)
+
+        if not changed_something:
+            suggestedsearch = None
 
         # Fetch relevant URLs ordered by page rank
         global orderedURLS
@@ -208,7 +210,6 @@ def home():
         missingwords = list(set(missingwords))
         if (len(missingwords) == 0):
             missingwords = None
-
         # resort based on page rank
         orderedURLS = sorted(orderedURLS, key=lambda x: x[2])
         intersectionList = sorted(intersectionList, key=lambda x: x[2])
@@ -219,6 +220,7 @@ def home():
             return template(
                 'templates/empty',
                 search_string=search_string,
+                suggestedsearch=suggestedsearch,
                 user=user,
             )
 
@@ -259,8 +261,7 @@ def home():
             currentPage=currentPage,
             range=range(begin,end+1),
             missingwords=missingwords,
-            oldsearch = oldsearch,
-            suggestedsearch=suggestedsearch
+            suggestedsearch=suggestedsearch,
         )
     else:
         history_table = {}

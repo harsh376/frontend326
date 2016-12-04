@@ -15,11 +15,7 @@
 
       <div class="results-form-container">
         <form action="/" method="GET">
-          % if oldsearch is None:
           <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{search_string}}">
-          % else:
-          <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{oldsearch}}">
-          %end
           <input class="results-search-btn" type="submit" name="save" value="Search">
         </form>
       </div>
@@ -43,11 +39,11 @@
 
     <div class="results-content">
       <div class="results-container">
-        % if oldsearch is None:
+        % if suggestedsearch is None:
         <h3 class="results-search-for">Searching for "<i>{{search_string}}</i>"</h3>
         % else:
-        <h3 class="results-search-for">Showing results for "<i>{{search_string}}</i> instead of <i>{{oldsearch}}</i>"</h3>
-        <!--<h3 class="results-search-for">Search instead for "<i>{{oldsearch}}</i>"</h3>-->
+        <h3 class="results-search-for">Showing results for "<i>{{search_string}}</i>"</h3>
+        <h3 class ="results-search-for">Did you mean <a href="/?keywords={{suggestedsearch}}&save=search">{{suggestedsearch}}</a></h3>
         %end
         <p class="results-search-for"><i>Page {{currentPage}} of {{val}} results</i></p>
           %for word in result:
@@ -89,15 +85,6 @@
         % end
 
       </form>
-    </div>
-
-      <div>
-        % if suggestedsearch is not None:
-           <h4>Did you mean"</h4>
-           %for word in suggestedsearch:
-                <a href="/?keywords={{word}}&save=search">{{word}} </a>
-           %end
-        %end
     </div>
     </div>
   </body>
