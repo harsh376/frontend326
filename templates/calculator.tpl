@@ -6,10 +6,47 @@
         <link rel="stylesheet" href="static/css/calculator.css" media="screen" type="text/css" />
         <link type="text/css" href="static/css/results.css" rel="stylesheet">"static/css/style.css" media="screen" type="text/css" />
         <script src="static/js/index.js"></script>
+
+        <script>
+          function showResult(search_query) {
+            if (search_query.length === 0) {
+              return;
+            }
+
+            var xmlhttp;
+
+            if (window.XMLHttpRequest) {
+              // code for IE7+, Firefox, Chrome, Opera, Safari
+              xmlhttp=new XMLHttpRequest();
+            } else {  // code for IE6, IE5
+              xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+
+            xmlhttp.onreadystatechange = function() {
+              if (this.readyState==4 && this.status==200) {
+                var response = JSON.parse(this.responseText);
+                var elements = response.elements;
+
+
+                document.getElementById('livesearch').innerHTML=elements;
+                document.getElementById("livesearch").style.border="1px solid #A5ACB2";
+
+                var headerHeight = document.getElementById('results-header').offsetHeight;
+                console.log(headerHeight);
+                document.getElementById('results-content').style.top = headerHeight;
+              }
+            }
+
+            var url = '/autocomplete?search_query='.concat(search_query)
+            xmlhttp.open('GET', url, true);
+            xmlhttp.send();
+          }
+        </script>
     </head>
     
     <body>
-      <div class="results-header">
+      <div id="results-header" class="results-header">
 
         <div class="results-logo-container">
           <a href="/" class="results-logo-link">
@@ -19,8 +56,9 @@
 
         <div class="results-form-container">
           <form action="/" method="GET">
-            <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{search_string}}">
+            <input class="results-search-field" type="text" size="100" maxlength="100" name="keywords" value="{{search_string}}" onkeyup="showResult(this.value)" autocomplete="off">
             <input class="results-search-btn" type="submit" name="save" value="Search">
+            <div id="livesearch"></div>
           </form>
         </div>
 
@@ -42,7 +80,7 @@
       </div>
 
 
-      <div class="results-content">
+      <div id="results-content" class="results-content">
         <table id="calculator">
           <tr>
             <td colspan="7">

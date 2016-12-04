@@ -2,6 +2,7 @@ import math
 import httplib2
 import sqlite3
 import enchant
+import autocomplete
 from gevent import monkey
 from oauth2client.client import (
     flow_from_clientsecrets,
@@ -31,6 +32,7 @@ from utils import (
 )
 
 monkey.patch_all()
+autocomplete.load()
 
 CLIENT_ID = '312115341730-c0rd7eo1u97h7c6r2qo0hva6ntiag5ki.apps.googleusercontent.com'
 CLIENT_SECRET = 'H-7_uURyXKwTvegQBhcsMsE0'
@@ -66,6 +68,7 @@ ignored_words = [
 d = enchant.Dict("en_US")
 suggestedsearch = None
 
+
 @route('/favicon.ico', method='GET')
 def get_favicon():
     return static_file('favicon.ico', root='static/')
@@ -74,6 +77,38 @@ def get_favicon():
 @route('/static/<folder>/<filename>')
 def send_file(folder, filename='index.html'):
     return static_file(filename, root='static/{}/'.format(folder))
+
+
+@route('/autocomplete', method='GET')
+def get_autocomplete_results():
+    if request.GET.search_query:
+        search_query = request.GET.search_query.strip()
+        tup = tuple(search_query.split())
+
+        if len(tup) < 2:
+            return {'elements': ''}
+        else:
+            b = [str(i) for i in tup[:-1]]
+            base = '+'.join(b)
+
+            tup = tup[-2:]
+            global autocomplete
+            result = autocomplete.predict(*tup)
+            result = sorted(result, key=lambda x: x[1])[::-1]
+            result = [r[0] for r in result]
+            result = result[:5]
+
+            dom_list = []
+            for sugg in result:
+                s = base + '+' + sugg
+
+                label = ' '.join(b + [sugg])
+
+                dom = '<div class=\"autocomplete-sug\"><a href=\"/?keywords=' + s + '&save=search\">' + label + '</a></div>'
+                dom_list.append(dom)
+
+            res = ''.join(dom_list)
+            return {'elements': res}
 
 
 @route('/', method='POST')
