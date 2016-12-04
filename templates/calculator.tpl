@@ -10,6 +10,10 @@
         <script>
           function showResult(search_query) {
             if (search_query.length === 0) {
+              document.getElementById("livesearch").innerHTML="";
+              var headerHeight = document.getElementById('results-header').offsetHeight;
+                console.log(headerHeight);
+                document.getElementById('results-content').style.top = headerHeight;
               return;
             }
 
